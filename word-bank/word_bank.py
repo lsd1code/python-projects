@@ -4,41 +4,53 @@ def main():
     misplaced_letters: set[str] = set()
     incorrect_letters: set[str] = set()
     num_chances = 5    
-    
-    CHOSEN_WORD = choice(get_words())
+
+    CHOSEN_WORD = get_word() 
 
     while True:
-        player_word = input('Guess the word (5 letters): ')
-        
+        try:
+            print('Leave blank and press "enter" / press "ctrl+c" to exit')
+            player_word = input('Guess the word (5 letters): ')
+        except KeyboardInterrupt:
+            exit()
+
+        if not player_word:
+            break
+
         if len(player_word) != 5:
             continue
-        
+
         result = check_words(CHOSEN_WORD, player_word, misplaced_letters, incorrect_letters)
 
         num_chances -= 1
-        
+
         display_stats(result, num_chances, misplaced_letters, incorrect_letters)
-        
+
         if CHOSEN_WORD == result:
             print(f'Congratulations!!!! You guessed the correct word: {result}. 😎✔ \n')
-            play_again()
-                    
+
         if num_chances < 1:
             print(f'Sorry, you lost. The correct word is {CHOSEN_WORD}. 😢😢 \n')
             play_again()
-        
 
-def get_words(filepath: str='words.txt') -> str:
+
+def gen_words(filepath: str='words.txt') -> str:
     with open(filepath) as words:
-        return [w.strip() for w in words]
+        content = words.read()
+        return content.split(', ')
 
-        
+
+def get_word() -> str:
+    word = choice(gen_words())
+    return word if len(word) <= 5 else get_word()
+
+
 def check_words(
     chosen_word: str, 
     player_word: str,
     misplaced_letters: set,
     incorrect_letters: set
-):
+) -> str:
     result = ''
     
     for idx, letter in enumerate(player_word):
@@ -50,10 +62,10 @@ def check_words(
         else:
             incorrect_letters.add(letter) 
             result += '_'
-                
+
     return result
 
-def play_again():
+def play_again() -> None:
     answer = input('Do you want to play again?(Y/N): ').lower()    
     return main() if answer == 'y' else exit()
 
@@ -67,7 +79,7 @@ def display_stats(
 	print(f'Misplaced letters: {list(misplaced_letters)}')
 	print(f'Incorrect letters: {list(incorrect_letters)}')
 	print(f'Chances remaining: {num_chances}\n')
-    
+
 
 if __name__ == "__main__":
     main()
