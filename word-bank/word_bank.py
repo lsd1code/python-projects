@@ -6,6 +6,7 @@ def main():
     num_chances = 5    
 
     CHOSEN_WORD = get_word() 
+    print(CHOSEN_WORD)
 
     while True:
         try:
